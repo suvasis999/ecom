@@ -18,8 +18,10 @@ exports.register = async function (req, res) {
     //create new user
     const newUser = new User({
       username: req.body.username,
-
       password: hashedPassword,
+      firstname : req.body.firstname,
+      lastname : req.body.lastname,
+      phone : req.body.phone
     });
 
     //save user and respond

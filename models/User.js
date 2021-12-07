@@ -10,6 +10,7 @@ var userSchema = new Schema({
     lastname: String, // lastName
     email: String,     // xyz@gmail.com
     phone: String,  //9999265656
+     
 });
 
 
