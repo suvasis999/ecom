@@ -10,9 +10,16 @@ var userSchema = new Schema({
     lastname: String, // lastName
     email: String,     // xyz@gmail.com
     phone: String,  //9999265656
-     
+   
 });
-
+// cart: {
+//     items: [
+//       {
+//         productId: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
+//         quantity: { type: Number, required: true }
+//       }
+//     ]
+//   }
 
 module.exports = User = mongoose.model('users', userSchema);
 

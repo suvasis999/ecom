@@ -1,18 +1,28 @@
-var mongoose = require('mongoose');
-const Schema = mongoose.Schema;
-
-
-// define the schema for our user model
-var ProductSchema = new Schema({
-
-    Title: String,
-    Rating: String,
-    Description: String,
-    Price: String,
-    Image: String,
-    Seller_Name: String,
+const mongoose = require("mongoose");
+const productSchema = mongoose.Schema({
+  name: {
+    type: String,
+    required: [true, "Please Include the product name"],
+  },
+  price: {
+    type: String,
+    required: [true, "Please Include the product price"],
+  },
+ image: {
+    type: String,
+    required: true,
+  },
+  rating : {
+    type: String,
+  },
+  description : {
+      type : String,
+  },
+  Seller_Name : {
+      type : String
+  }
 });
+const Product = mongoose.model("Product", productSchema);
+module.exports = Product;
 
-
-module.exports = Product = mongoose.model('product', ProductSchema);
-
+ 

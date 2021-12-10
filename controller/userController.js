@@ -43,8 +43,8 @@ exports.login = async function (req, res) {
   User.findOne({ username }).then(user => {
     // Check for user
     if (!user) {
-      errors.email = 'User not found';
-      return res.status(404).json(errors);
+ 
+      return res.status(404).json("Username not found");
     }
 
     // Check Password
@@ -73,5 +73,6 @@ exports.login = async function (req, res) {
 }
 
 
+ 
 
 

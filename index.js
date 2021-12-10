@@ -15,6 +15,7 @@ const db = require('./config/keys').mongoURI;
 
 const router = require('./routes/api/users')
 const prouter = require('./routes/api/product')
+const pcart  = require('./routes/api/cart')
 mongoose
   .connect(db, {
     useNewUrlParser: true,
@@ -31,6 +32,7 @@ mongoose
 app.use(passport.initialize());
 app.use('/', router);
 app.use('/product', prouter)
+app.use('/cart',pcart)
 
 // Passport Config
 require('./config/passport')(passport);
