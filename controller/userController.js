@@ -48,17 +48,13 @@ exports.login = async function (req, res) {
         const payload = { id: user.id, username: user.username }; // Create JWT Payload
 
         // Sign Token
-        jwt.sign(
-          payload,
-          keys.secretOrKey,
-          { expiresIn: 3600 },
-          (err, token) => {
-            res.json({
-              success: true,
-              token,
-            });
-          }
-        );
+        jwt.sign(payload, keys.secretOrKey, { expiresIn: 90 }, (err, token) => {
+          res.json({
+            success: true,
+            user,
+            token,
+          });
+        });
       } else {
         return res.status(400).send("Incorrect email or Password");
       }
