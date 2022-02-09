@@ -1,4 +1,4 @@
-const Order = require("../models/order");
+const Order = require("../models/Order");
 exports.placeOrder = async (req, res) => {
   try {
     const { productId, quantity, price, address, payment, paymentStatus } = req.body;
@@ -8,15 +8,14 @@ exports.placeOrder = async (req, res) => {
       price: price,
       address: address,
       customerId: req.user._id,
-      vendorId: req.product.userId,
+      // vendorId: req.product.userId,
       payment: payment,
       paymentStatus: paymentStatus,
     });
     let data = await order.save();
     res.status(200).json({
-      type: "success",
-      msg: "Order Pending",
-      data: data,
+      type: "successfully order placed",
+      msg: "Order Pending"
     });
   } catch (err) {
     console.log(err);
@@ -31,11 +30,10 @@ exports.placeOrder = async (req, res) => {
 exports.getOrders = async (req, res) => {
   try {
     let id = req.params.id;
-    let orders = await Order.findById({ orderId: id });
+    let orders = await Order.findById({_id: id });
     res.status(200).json({
       type: "success",
-      msg: orders.status,
-      data: orders,
+      msg: `order ${orders.status}`
     });
   } catch (err) {
     console.log(err);
@@ -50,13 +48,13 @@ exports.getOrders = async (req, res) => {
 exports.acceptOrder = async (req, res) => {
   try {
     let id = req.params.id;
-    let order = await Order.findById(id);
+    let order = await Order.findById({_id: id });
     order.status = "processing";
     let data = await order.save();
     res.status(200).json({
       type: "success",
       msg: "Order Processing",
-      data: data,
+      order: data.status,
     });
   } catch (err) {
     console.log(err);
@@ -71,7 +69,7 @@ exports.acceptOrder = async (req, res) => {
 exports.cancelOrder = async (req, res) => {
   try {
     let id = req.params.id;
-    let order = await Order.findById(id);
+    let order = await Order.findById({_id: id });
     order.status = "cancelled";
     order.cancel = true;
     order.reasonForCancel = req.body.reasonForCancel;
@@ -79,7 +77,7 @@ exports.cancelOrder = async (req, res) => {
     res.status(200).json({
       type: "success",
       msg: "Order Cancelled",
-      data: data,
+      reason: data.reasonForCancel,
     });
   } catch (err) {
     console.log(err);
@@ -94,7 +92,7 @@ exports.cancelOrder = async (req, res) => {
 exports.orderShipped = async (req, res) => {
   try {
     let id = req.params.id;
-    let order = await Order.findById(id);
+    let order = await Order.findById({_id: id });
     order.status = "shipped";
     order.shippingId = req.body.shippingId;
     order.shippingMethod = req.body.shippingMethod;
@@ -102,7 +100,6 @@ exports.orderShipped = async (req, res) => {
     res.status(200).json({
       type: "success",
       msg: "Order Shipped",
-      data: data,
     });
   } catch (err) {
     console.log(err);
