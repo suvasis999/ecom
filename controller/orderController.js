@@ -15,7 +15,8 @@ exports.placeOrder = async (req, res) => {
     let data = await order.save();
     res.status(200).json({
       type: "successfully order placed",
-      msg: "Order Pending"
+      msg: "Order Pending",
+      data: data
     });
   } catch (err) {
     console.log(err);
@@ -33,7 +34,8 @@ exports.getOrders = async (req, res) => {
     let orders = await Order.findById({_id: id });
     res.status(200).json({
       type: "success",
-      msg: `order ${orders.status}`
+      msg: `order ${orders.status}`,
+      data: orders
     });
   } catch (err) {
     console.log(err);
@@ -100,6 +102,7 @@ exports.orderShipped = async (req, res) => {
     res.status(200).json({
       type: "success",
       msg: "Order Shipped",
+      data: data,
     });
   } catch (err) {
     console.log(err);
