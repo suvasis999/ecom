@@ -1,6 +1,7 @@
 const Order = require("../models/Order");
 exports.placeOrder = async (req, res) => {
   try {
+    console.log(req.user)
     const { productId, quantity, price, address, payment, paymentStatus } = req.body;
     const order = new Order({
       productId: productId,
@@ -8,7 +9,7 @@ exports.placeOrder = async (req, res) => {
       price: price,
       address: address,
       customerId: req.user._id,
-      // vendorId: req.product.userId,
+      vendorId: req.product.Seller_Name,
       payment: payment,
       paymentStatus: paymentStatus,
     });
