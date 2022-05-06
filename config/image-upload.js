@@ -19,6 +19,9 @@ const storage = multer.diskStorage({
 			case 'prodCategory':
 				filePath = 'upload/prodCategory'
 				break;
+			case 'adds':
+				filePath = 'upload/adds'
+				break;
 			default: filePath = 'upload/other'
 		}
 		if (!fs.existsSync(filePath)) {

@@ -12,13 +12,14 @@ module.exports.addToCart = async (req, res, next) => {
             return res.status(400).json({ status: false, msg: "user_id or product_id  not found" })
         }
 
-        const alReadyExist = await Cart.findOne({ "products.product_id": productId });
+        const alReadyExist = await Cart.findOne({user_id:userId, "products.product_id": productId });
+        console.log(alReadyExist)
         if (alReadyExist != null) {
             return res.status(400).send({ status: false, msg: 'Product already in cart. Please add quantity instead', });
         }
         const productDetail = await Product.findOne({ _id: productId })
         if (productDetail && productDetail.stock < qty) {
-            return res.status(200).send({ status: false, msg: 'Product out of stock. Please try again' });
+            return res.status(400).send({ status: false, msg: 'Product out of stock. Please try again' });
         }
         if (productDetail != null) {
             const addingToCart = await Cart.findOneAndUpdate(

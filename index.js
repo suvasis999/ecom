@@ -34,6 +34,7 @@ const cartRouter = require('./routes/cart')
 const orderRouter = require('./routes/order')
 const reviewRouter = require('./routes/review')
 const paymentRouter = require('./routes/payment')
+const addsRouter = require('./routes/adds')
 
 
 
@@ -48,6 +49,7 @@ app.use('/api/v1/cart', cartRouter)
 app.use('/api/v1/order', orderRouter)
 app.use('/api/v1/review', reviewRouter)
 app.use('/api/v1/payment', paymentRouter)
+app.use('/api/v1/adds', addsRouter)
 
 
 //middleware for error handler
