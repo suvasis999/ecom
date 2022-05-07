@@ -46,9 +46,15 @@ module.exports.uploadId = async (req, res, next) => {
             return res.status(400).json({ msg: 'Vendor id  is required', status: false })
         }
         let update = {}
-        update.doc_1 = server_url + req.files['doc_1'][0].path;
-        update.doc_2 = server_url + req.files['doc_2'][0].path;
-        update.doc_3 = server_url + req.files['doc_3'][0].path;
+        if(req.files['doc_1']){
+            update.doc_1 = server_url + req.files['doc_1'][0].path;
+        }
+        if(req.files['doc_2']){
+            update.doc_2 = server_url + req.files['doc_2'][0].path;
+        }
+        if(req.files['doc_3']){
+            update.doc_3 = server_url + req.files['doc_3'][0].path;
+        }
 
         Vendor.findByIdAndUpdate(id, update, er => {
             if (!er) {
@@ -82,7 +88,7 @@ module.exports.editVendor = async (req, res, next) => {
         if (!existVendor) {
             return res.status(400).json({ msg: 'Vendor not found.', status: false })
         }
-        await Vendor.findByIdAndUpdate(id, update)
+        await Vendor.findByIdAndUpdate(id, {...update, status:"Pending"})
         res.json({ msg: 'Vendor profile updated', status: true })
     }
     catch (error) {

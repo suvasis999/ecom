@@ -13,7 +13,6 @@ module.exports.addToCart = async (req, res, next) => {
         }
 
         const alReadyExist = await Cart.findOne({user_id:userId, "products.product_id": productId });
-        console.log(alReadyExist)
         if (alReadyExist != null) {
             return res.status(400).send({ status: false, msg: 'Product already in cart. Please add quantity instead', });
         }
@@ -62,7 +61,6 @@ module.exports.wishListToCart = async (req, res, next) => {
             return res.status(400).json({ status: false, msg: "user_id or product_id  not found" })
         }
         const existWishList = await WishList.findById(wishListId)
-        console.log(existWishList )
         if (existWishList == null || existWishList.products.length < 1) {
             return res.status(400).send({ status: false, msg: 'Wish list not found', });
         }

@@ -36,7 +36,6 @@ module.exports.editProduct = async (req, res, next) => {
 		const {
 			vendor_id, name, price, category, price_off, colors, size, stock, sold, product_details
 		} = req.body
-		console.log(req.body)
 		const updateDate = Validation.updateData([
 			{vendor_id}, {name}, {price}, {category}, {price_off}, {colors}, {size}, {stock}, {sold}, {product_details},
 		])
@@ -103,7 +102,6 @@ module.exports.addPicture = async (req, res, next) => {
 		const allImage = req.files.map(pic => {
 			return server_url + pic.path
 		})
-		console.log("allImage", allImage)
 		Product.findByIdAndUpdate(id, { $set: { images: allImage } }, (er) => {
 			if (!er) {
 				return res.status(200).json({ status: true, msg: `Product pictures uploaded successfully.` })
@@ -276,7 +274,22 @@ module.exports.getById = async (req, res, next) => {
 		next(er)
 	}
 }
-
+module.exports.availability = async (req, res, next) => {
+	try {
+		const id = req.params.id
+		const qty = req.query.qty
+		const productDetails = await Product.findOne({_id:id,stock:{$gte:qty}})
+		if (productDetails != null) {
+			return res.status(200).json({ status: true, msg: "Product is available",  })
+		}
+		else {
+			return res.status(200).json({ status: false, msg: "Product out of stock" })
+		}
+	}
+	catch (er) {
+		next(er)
+	}
+}
 module.exports.bestSeller = async (req, res, next) => {
 	try {
 		const page = parseInt(req.query.page) || 1;

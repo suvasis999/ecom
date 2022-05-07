@@ -14,6 +14,7 @@ router.get("/get-all-vendor/:vendor_id", ProductController.getAllForVendor);
 
 // for users
 router.get("/get-by-id/:id", ProductController.getById);
+router.get("/availability/:id", ProductController.availability);
 router.get("/get-best-seller", ProductController.bestSeller);
 router.get("/get-popular", ProductController.popular);
 router.get("/get-new", ProductController.newProduct);
