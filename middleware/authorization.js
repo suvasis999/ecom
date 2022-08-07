@@ -16,7 +16,7 @@ const authorize = (roles = []) => {
                 req.role = null
                 const getToken = req.headers.authorization || req.body.token || req.query.token || req.headers["x-access-token"];;
                 if (!getToken) {
-                    return res.status(400).json({ msg: "Please provide token.", status: false })
+                    return res.status(401).json({ msg: "Please provide token.", status: false })
                 }
                 let token = getToken
                 if (getToken && getToken.split(' ')[0] === 'Bearer') {
@@ -29,19 +29,21 @@ const authorize = (roles = []) => {
                 if (user_id) {
                     const existUser = await User.findById(user_id)
                     if (existUser) {
-                        if (existUser.accessToken !== token) {
-                            return res.status(400).json({ msg: "User is logged out or token is invalid. Authentication failed.", status: false })
-                        } 
-                        else   {
-                            req.role = existUser.role
-                            req.user = user_id
-                        }
+                        // if (existUser.accessToken !== token) {
+                        //     return res.status(401).json({ msg: "User is logged out or token is invalid. Authentication failed.", status: false })
+                        // } 
+                        // else   {
+                        //     req.role = existUser.role
+                        //     req.user = user_id
+                        // }
+                        req.role = existUser.role
+                        req.user = user_id
                     }
                     else {
-                        return res.status(400).json({ msg: "User not found.", status: false })
+                        return res.status(401).json({ msg: "User not found.", status: false })
                     }
                 } else {
-                    return res.status(400).json({ msg: "Session is time out or Token is not valid. Authentication failed.", status: false })
+                    return res.status(401).json({ msg: "Session is time out or Token is not valid. Authentication failed.", status: false })
                 }
                 next()
             }
@@ -54,7 +56,7 @@ const authorize = (roles = []) => {
             console.log("roles", roles)
             if (roles.length && !roles.includes(req.role)) {
                 // user's role is not authorized
-                return res.status(401).json({ message: 'You have not authorize to access this' ,status:false});
+                return res.status(401).json({ message: 'You have not authorize to access this', status: false });
             }
             else next();
             // authentication and authorization successful

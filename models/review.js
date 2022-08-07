@@ -20,7 +20,13 @@ const ReviewProductSchema = new mongoose.Schema({
   vendor_id: {
     type: mongoose.Schema.ObjectId,
     ref: 'Vendor'
+  },
+  isBlocked:{
+    type:Boolean,
+    default:false
   }
+}, {
+  timestamps: true,
 });
 
 module.exports = mongoose.model('Review', ReviewProductSchema);

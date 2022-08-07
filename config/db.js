@@ -19,7 +19,9 @@ const connectDB = async () => {
                         phone:9876543210,
                         password: encryptedPassword,
                         email: "admin@mail.com",
-                        role: role.ADMIN
+                        role: role.ADMIN,
+                        isVerified:true,
+                        userName:'admin'
                     }).save(err => {
                         if (err) {
                             console.log("error", err);

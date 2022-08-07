@@ -1,11 +1,11 @@
 const jwt = require('jsonwebtoken')
-const User = require('../model/user')
+const User = require('../models/User')
 const auth = async (req, res, next) => {
     try {
 
         const getToken = req.headers.authorization || req.body.token || req.query.token || req.headers["x-access-token"];;
         if (!getToken) {
-            return res.status(400).json({ msg: "Please provide token.", status: false })
+            return res.status(401).json({ msg: "Please provide token.", status: false })
         }
         let token = getToken
         if (getToken && getToken.split(' ')[0] === 'Bearer') {
@@ -19,11 +19,11 @@ const auth = async (req, res, next) => {
         let _user = null
         if (user_id) {
             _user = await User.findById(user_id)
-            if (_user.accessToken !== token) {
-                return res.status(400).json({ msg: "User is logged out please login.", status: false })
-            }
+            // if (_user.accessToken !== token) {
+            //     return res.status(401).json({ msg: "User is logged out please login.", status: false })
+            // }
         } else {
-            return res.status(400).json({ msg: "Session is time out or Token is not valid. authentication failed.", status: false })
+            return res.status(401).json({ msg: "Session is time out or Token is not valid. authentication failed.", status: false })
         }
         req.user = _user._id
         next()

@@ -11,6 +11,7 @@ module.exports.apply = async function (req, res, next) {
             name,
             phone,
             company_name,
+            tax_id
         } = req.body
         const existUser = await User.findById(user_id)
         if (existUser == null) {
@@ -27,6 +28,7 @@ module.exports.apply = async function (req, res, next) {
             name,
             phone,
             company_name,
+            tax_id
         });
 
         //save user and respond

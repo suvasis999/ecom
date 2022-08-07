@@ -23,18 +23,21 @@ let OrderScema = new Schema(
 			min: [1, "Quantity can not be less then 1."],
 		},
 		address: {
+			name: String,
 			email: String,
-			phone:String,
-			address:String,
-			city:String,
-			pin:String,
-			country:String,
-			name:String
+			phone: String,
+			address_line_1: String,
+			address_line_2: String,
+			address_line_3: String,
+			zip_code: String,
+			landmark: String,
+			state: String,
+			country: String,
 		},
 		status: {
 			type: String,
 			default: "pending",
-			enum: ["pending","approved", "cancelled", "shipped", "delivered"]
+			enum: ["pending", "approved", "cancelled", "shipped", "delivered"]
 		},
 		shipmentCompany: {
 			type: String,
@@ -42,7 +45,9 @@ let OrderScema = new Schema(
 		consignmentNo: {
 			type: String,
 		},
-
+		shippingDate:{
+			type :Date
+		},
 		price: {
 			type: Number,
 		},

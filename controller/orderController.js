@@ -16,6 +16,7 @@ module.exports.createOrder = async (req, res, next) => {
 		if (!product_detail) {
 			return res.status(400).send({ status: false, msg: 'Product not found or product out of stock!' });
 		}
+		console.log("address",address)
 		const order_details = {
 			"product_id": product_id,
 			"user_id": user_id,
@@ -166,8 +167,8 @@ module.exports.cancelOrder = async (req, res, next) => {
 		const {
 			cancel_reason, id
 		} = req.body
-		if (!cancel_reason || !id) {
-			return res.status(400).send({ status: false, msg: 'Please provide user_id & id & cancel_reason' });
+		if (  !id) {
+			return res.status(400).send({ status: false, msg: 'Please provide  id ' });
 		}
 
 		const cancelOrder = await Order.findOneAndUpdate({ _id: id }, { status: "cancelled", reasonForCancel: cancel_reason });
@@ -175,7 +176,7 @@ module.exports.cancelOrder = async (req, res, next) => {
 			return res.status(200).send({ status: true, msg: 'Order cancelled', });
 		}
 		else {
-			return res.status(200).send({ status: false, msg: 'Order cancelled could not be cancelled' });
+			return res.status(200).send({ status: false, msg: 'Order  could not be cancelled' });
 		}
 	}
 	catch (er) {
@@ -256,6 +257,8 @@ module.exports.getById = async (req, res, next) => {
 						as: "vendor_details",
 					},
 				},
+				{ $unwind: "$vendor_details" },
+
 				{
 					$project: {
 						"product_details.stock": 0,
@@ -264,7 +267,6 @@ module.exports.getById = async (req, res, next) => {
 						"product_details.createdAt": 0,
 						"product_details.updatedAt": 0,
 
-						"vendor_details.user_id": 0,
 						"vendor_details.email": 0,
 						"vendor_details.phone": 0,
 						"vendor_details.status": 0,
@@ -315,6 +317,7 @@ module.exports.allOrderByUser = async (req, res, next) => {
 						as: "product_details",
 					},
 				},
+				{$unwind:"$product_details"},
 				{
 					$lookup:
 					{

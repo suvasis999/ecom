@@ -6,13 +6,27 @@ const errorHandler = require("./config/error")
 const morgan = require('morgan')
 const cors = require('cors')
 const connectDB = require('./config/db');
+const http = require('http');
 require('dotenv').config();
 
 const User = require("./models/User")
 const role = require("./config/role")
 const app = express();
-//middleware
+
 app.use(cors())
+
+const server = http.createServer(app);
+const io = require("socket.io")(server, {
+	cors: {
+		origin: "*",
+		methods: ["GET", "POST"],
+		allowedHeaders: ["my-custom-header"],
+		credentials: true
+	  }
+  });
+
+require("./socket/chatRoute")(io, app);
+//middleware
 if (process.env.NODE_ENV === 'development') {
 	app.use(morgan('tiny'))
 }
@@ -35,6 +49,7 @@ const orderRouter = require('./routes/order')
 const reviewRouter = require('./routes/review')
 const paymentRouter = require('./routes/payment')
 const addsRouter = require('./routes/adds')
+const chatRouter = require('./routes/chat')
 
 
 
@@ -50,6 +65,7 @@ app.use('/api/v1/order', orderRouter)
 app.use('/api/v1/review', reviewRouter)
 app.use('/api/v1/payment', paymentRouter)
 app.use('/api/v1/adds', addsRouter)
+app.use('/api/v1/chat', chatRouter)
 
 
 //middleware for error handler
@@ -67,4 +83,4 @@ process.on("unhandledRejection", (err, promise) => {
 });
 const port = process.env.PORT || 5000;
 
-app.listen(port, () => console.log(`Server running on port ${port}`));
+server.listen(port, () => console.log(`Server running on port ${port}`));

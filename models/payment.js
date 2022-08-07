@@ -18,7 +18,7 @@ const PaymentsSchema = new mongoose.Schema({
     status: {
         type: String,
         default: 'pending',
-        enum: ['pending', 'paid', 'rejected', 'failed']
+        enum: ['pending', 'paid', 'rejected', 'failed','cancelled']
     },
     user_id: {
         type: mongoose.Schema.ObjectId,

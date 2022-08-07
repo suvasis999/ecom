@@ -46,15 +46,15 @@ const productSchema = mongoose.Schema({
 	},
 	rateCount: {
 		type: Number,
-		default: 1
+		default: 0
 	},
 	rateValue: {
 		type: Number,
-		default: 3
+		default: 0
 	},
 	rating: {
 		type: Number,
-		default: 3
+		default: 0
 	},
 	product_details: [
 		{

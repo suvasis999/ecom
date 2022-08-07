@@ -252,7 +252,6 @@ module.exports.getById = async (req, res, next) => {
 				},
 				{
 					$project: {
-						'vendor_details.user_id': 0,
 						'vendor_details.email': 0,
 						'vendor_details.phone': 0,
 						'vendor_details.status': 0,

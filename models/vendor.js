@@ -25,6 +25,12 @@ const vendorSchema = new Schema({
 	company_name: {
 		type: String
 	},
+	wallet: {
+		type: String
+	},
+	tax_id: {
+		type: String
+	},
 	doc_1: {
 		type: String,
 	},
