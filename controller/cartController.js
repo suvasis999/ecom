@@ -123,7 +123,7 @@ module.exports.wishListToCart = async (req, res, next) => {
   }
 };
 //edit cart details
-module.exports.changeQty = async (req, res) => {
+module.exports.changeQty = async (req, res,next) => {
   try {
     const { product_id, user_id, quantity } = req.body;
     if (!product_id || !user_id || quantity == undefined) {

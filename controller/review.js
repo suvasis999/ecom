@@ -131,7 +131,7 @@ module.exports.editReview = async (req, res, next) => {
     next(er);
   }
 };
-module.exports.viewReview = async (req, res) => {
+module.exports.viewReview = async (req, res, next) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = 30;
@@ -147,12 +147,12 @@ module.exports.viewReview = async (req, res) => {
       product_id: new mongoose.Types.ObjectId(product_id),
       isBlocked: false,
     };
-    if(star && [1,2,3,4,5].includes(Number(star))){
-      match.rating = Number(star)
+    if (star && [1, 2, 3, 4, 5].includes(Number(star))) {
+      match.rating = Number(star);
     }
     const viewreview = await Review.aggregate([
       {
-        $match: {match},
+        $match: { match },
       },
       { $skip: skip },
       { $limit: limit },
@@ -193,7 +193,7 @@ module.exports.viewReview = async (req, res) => {
   }
 };
 
-module.exports.viewReviewByUser = async (req, res) => {
+module.exports.viewReviewByUser = async (req, res, next) => {
   try {
     const user_id = req.params.user_id;
     if (!user_id) {
@@ -249,7 +249,7 @@ module.exports.viewReviewByUser = async (req, res) => {
   }
 };
 
-module.exports.Reviewlist = async (req, res) => {
+module.exports.Reviewlist = async (req, res, next) => {
   try {
     if (!req.params.product_id) {
       return res
@@ -259,12 +259,17 @@ module.exports.Reviewlist = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = 30;
     const skip = page ? (page - 1) * limit : 0;
+    const star = req.query.star;
+    let match = {
+      product_id: new mongoose.Types.ObjectId(req.params.product_id),
+      isBlocked: false,
+    };
+    if (star && [1, 2, 3, 4, 5].includes(Number(star))) {
+      match.rating = Number(star);
+    }
     const productdetailsList = await Review.aggregate([
       {
-        $match: {
-          product_id: new mongoose.Types.ObjectId(req.params.product_id),
-          isBlocked: false,
-        },
+        $match: match,
       },
       { $skip: skip },
       { $limit: limit },
