@@ -142,17 +142,12 @@ module.exports.viewReview = async (req, res, next) => {
         .status(400)
         .send({ status: false, msg: "Product_id  not found" });
     }
-    const star = req.query.star;
-    let match = {
-      product_id: new mongoose.Types.ObjectId(product_id),
-      isBlocked: false,
-    };
-    if (star && [1, 2, 3, 4, 5].includes(Number(star))) {
-      match.rating = Number(star);
-    }
     const viewreview = await Review.aggregate([
       {
-        $match: { match },
+        $match: {
+          product_id: new mongoose.Types.ObjectId(product_id),
+          isBlocked: false,
+        },
       },
       { $skip: skip },
       { $limit: limit },
@@ -176,8 +171,39 @@ module.exports.viewReview = async (req, res, next) => {
           as: "product_details",
         },
       },
+      {
+        $group: {
+          _id: null,
+          five_star: {
+            $sum: {
+              $cond: [{ $eq: ["$rating", 5] }, 1, 0],
+            },
+          },
+          four_star: {
+            $sum: {
+              $cond: [{ $eq: ["$rating", 4] }, 1, 0],
+            },
+          },
+          three_star: {
+            $sum: {
+              $cond: [{ $eq: ["$rating", 3] }, 1, 0],
+            },
+          },
+          two_star: {
+            $sum: {
+              $cond: [{ $eq: ["$rating", 2] }, 1, 0],
+            },
+          },
+          one_star: {
+            $sum: {
+              $cond: [{ $eq: ["$rating", 1] }, 1, 0],
+            },
+          },
+          productDetails: { $first: "$product_details" },
+        },
+      },
     ]);
-    if (viewreview != null) {
+    if (viewreview.length > 0) {
       res.status(200).send({
         status: true,
         data: viewreview,
@@ -186,7 +212,7 @@ module.exports.viewReview = async (req, res, next) => {
     } else {
       res
         .status(200)
-        .send({ status: false, msg: "Product review could not be found" });
+        .send({ status: false, msg: "Product review  not  found" });
     }
   } catch (er) {
     next(er);
@@ -264,9 +290,9 @@ module.exports.Reviewlist = async (req, res, next) => {
       product_id: new mongoose.Types.ObjectId(req.params.product_id),
       isBlocked: false,
     };
-    if (star && [1, 2, 3, 4, 5].includes(Number(star))) {
-      match.rating = Number(star);
-    }
+    // if (star && [1, 2, 3, 4, 5].includes(Number(star))) {
+    //   match.rating = Number(star);
+    // }
     const productdetailsList = await Review.aggregate([
       {
         $match: match,

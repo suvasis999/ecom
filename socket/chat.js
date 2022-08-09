@@ -19,8 +19,9 @@ class chatSocket {
       }
       socket.on("create_room", async (data) => {
         let chat_id = null;
-        console.log("create room ", data)
+        console.log("create room=>> ", data)
         const existChat = await Chat.findOne({ "members.user": [data.from.user, data.to.user] })
+        console.log("existChat=>>",existChat);
         const productId = data.productId;
         if (existChat == null) {
           const newChat = await Chat.create({
@@ -35,7 +36,7 @@ class chatSocket {
             await existChat.save();
           }
         }
-        console.log("create room", chat_id, data);
+        console.log("created room ", chat_id, data);
         socket.join(chat_id);
         this.notification.to(chat_id).emit("room_joined", chat_id);
       });
