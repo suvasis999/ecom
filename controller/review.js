@@ -290,9 +290,9 @@ module.exports.Reviewlist = async (req, res, next) => {
       product_id: new mongoose.Types.ObjectId(req.params.product_id),
       isBlocked: false,
     };
-    // if (star && [1, 2, 3, 4, 5].includes(Number(star))) {
-    //   match.rating = Number(star);
-    // }
+    if (star && [1, 2, 3, 4, 5].includes(Number(star))) {
+      match.rating = Number(star);
+    }
     const productdetailsList = await Review.aggregate([
       {
         $match: match,
@@ -318,8 +318,7 @@ module.exports.Reviewlist = async (req, res, next) => {
             },
             {
               $project: {
-                firstname: 1,
-                lastname: 1,
+                userName: 1,
               },
             },
           ],
