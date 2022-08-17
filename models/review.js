@@ -6,7 +6,8 @@ const ReviewProductSchema = new mongoose.Schema({
     type: String
   },
   rating: {
-    type: Number
+    type: Number,
+    required: true,
   },
   product_id: {
     type: mongoose.Schema.ObjectId,
@@ -20,6 +21,11 @@ const ReviewProductSchema = new mongoose.Schema({
   vendor_id: {
     type: mongoose.Schema.ObjectId,
     ref: 'Vendor'
+  },
+  feedback:{
+    required: true,
+    type:String,
+    enum:["positive","neutral","negative"]
   },
   isBlocked:{
     type:Boolean,

@@ -61,37 +61,35 @@ module.exports.AllChat = async (req, res, next) => {
           from: "users",
           foreignField: "_id",
           localField: "members.user",
-          // let: { userID: "$members.user" },
-          // pipeline: [
-          //     {
-          //         $match: {
-          //             $and: [
-          //                 {
-          //                     $expr: {
-          //                         $eq: ["$$userID", "$_id"]
-          //                     }
-          //                 }
-          //             ]
-          //         }
-          //     },
-          //     {
-          //         $project: {
-          //             "firstname": 1,
-          //             "lastname": 1,
-          //         }
-          //     }
-          // ],
           as: "all_users",
         },
       },
       {
+        "$addFields": {
+          vendor_user: {
+            "$filter": {
+              "input": "$members",
+              "as": "members",
+              "cond": {
+                $eq: [
+                  "$$members.type",
+                  "seller"
+                ]
+              }
+            }
+          }
+        }
+      },
+      {$unwind:"$vendor_user"},
+      {
         $lookup: {
           from: "vendors",
           foreignField: "user_id",
-          localField: "all_users._id",
+          localField: "vendor_user.user",
           as: "vendor",
         },
       },
+     
       { $unwind: "$vendor" },
       {
         $lookup: {
@@ -143,7 +141,7 @@ module.exports.AllChat = async (req, res, next) => {
           console.log("isBought======", curChat.lastMsg.from);
           console.log("isBought======", userId);
           return {
-            isPaid: Boolean(true),
+            isPaid: isBought,
             all_users: allUser,
             _id: curChat._id,
             lastMsg: curChat.lastMsg,

@@ -9,9 +9,9 @@ class chatSocket {
     this.notification = io;
     this.notification.on("connection", async (socket) => {
       const { userId } = socket.handshake.query;
-      console.log("user connected",userId)
+      console.log("user connected", userId);
       if (userId) {
-        const allRooms = await Chat.find({ "members.user": { $in: [userId] } })
+        const allRooms = await Chat.find({ "members.user": { $in: [userId] } });
         if (allRooms.length) {
           const allRoomId = allRooms.map((room) => room._id.toString());
           socket.join(allRoomId);
@@ -19,9 +19,11 @@ class chatSocket {
       }
       socket.on("create_room", async (data) => {
         let chat_id = null;
-        console.log("create room=>> ", data)
-        const existChat = await Chat.findOne({ "members.user": [data.from.user, data.to.user] })
-        console.log("existChat=>>",existChat);
+        console.log("create room=>> ", data);
+        const existChat = await Chat.findOne({
+          "members.user": { $all: [data.from.user, data.to.user] },
+        });
+        console.log("existChat=>>", existChat);
         const productId = data.productId;
         if (existChat == null) {
           const newChat = await Chat.create({
@@ -31,7 +33,7 @@ class chatSocket {
           chat_id = newChat._id;
         } else {
           chat_id = existChat._id;
-          if (!existChat.product.equals(productId)) {
+          if (productId) {
             existChat.product = productId;
             await existChat.save();
           }
@@ -50,10 +52,10 @@ class chatSocket {
                 from: data.from,
                 time: data.time,
                 body: data.body,
-                attachment:data.attachment
+                attachment: data.attachment,
               },
             },
-            isRead:false
+            isRead: false,
           },
           (er, doc) => {
             if (!er) {

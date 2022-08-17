@@ -2,35 +2,11 @@ const Review = require("../models/review");
 const Product = require("../models/Product");
 const Vendor = require("../models/vendor");
 const mongoose = require("mongoose");
-const vendorOverAllReview = async (vendor_id) => {
-  if (!vendor_id) return null;
-  const allReview = await Product.aggregate([
-    {
-      $match: {
-        vendor_id: mongoose.Types.ObjectId(vendor_id),
-      },
-    },
-    {
-      $group: {
-        _id: "null",
-        avgRating: { $avg: "$rating" },
-        totalRating: {
-          $sum: "$rateCount",
-        },
-      },
-    },
-  ]);
-  const avgRatings = Number.parseFloat(
-    (100 * allReview[0].avgRating) / 5
-  ).toFixed(2);
-  await Vendor.findByIdAndUpdate(vendor_id, {
-    average_rating: avgRatings,
-    total_rating: allReview[0].totalRating,
-  });
-};
+
 module.exports.addReview = async (req, res, next) => {
   try {
-    const { description, rating, product_id, vendor_id, user_id } = req.body;
+    const { description, rating, product_id, vendor_id, user_id, feedback } =
+      req.body;
 
     const ratedBefore = await Review.countDocuments({
       user_id: user_id,
@@ -43,6 +19,7 @@ module.exports.addReview = async (req, res, next) => {
         product_id,
         vendor_id,
         user_id,
+        feedback,
       });
       await Product.updateOne(
         { _id: product_id },
@@ -57,7 +34,31 @@ module.exports.addReview = async (req, res, next) => {
           },
         },
       ]);
-      vendorOverAllReview(vendor_id);
+      if (feedback) {
+        await Vendor.findByIdAndUpdate(vendor_id, {
+          $inc: {
+            total_feedback: 1,
+            positive_feedback: feedback === "positive" ? 1 : 0,
+          },
+        });
+        await Vendor.updateOne({ _id: vendor_id }, [
+          {
+            $set: {
+              average_positive_feedback: {
+                $round: [
+                  {
+                    $divide: [
+                      { $multiply: ["$positive_feedback", 100] },
+                      "$total_feedback",
+                    ],
+                  },
+                  2,
+                ],
+              },
+            },
+          },
+        ]);
+      }
       if (NewReview != null) {
         res.status(200).send({
           status: true,
@@ -70,19 +71,6 @@ module.exports.addReview = async (req, res, next) => {
           .send({ status: false, msg: "Product review could not be added" });
       }
     } else {
-      // const getReview = await Review.findOne({ user_id, product_id })
-
-      // await Review.findOneAndUpdate({ user_id, product_id }, { description, rating })
-      // const updateRating = rating - getReview.rating
-      // await Product.updateOne({ _id: getReview.product_id },
-      //     {
-      //         $inc: { 'rateValue': updateRating },
-      //     }
-      // )
-      // await Product.updateOne({ _id: getReview.product_id },
-      //     [{ $set: { "rating": { $round: [{ $divide: ["$rateValue", "$rateCount"] }, 1] } } }]
-      // )
-      // vendorOverAllReview(vendor_id)
       res.status(200).send({
         status: false,
         msg: "Feedback already submitted for this order.",
@@ -387,13 +375,84 @@ module.exports.blockReview = async (req, res, next) => {
           },
         },
       ]);
-      vendorOverAllReview(vendor_id);
     }
     if (getReview != null) {
       res.status(200).send({ status: true, msg: "Product review blocked" });
     } else {
       res.status(200).send({ status: false, msg: "Product review not found" });
     }
+  } catch (er) {
+    next(er);
+  }
+};
+
+module.exports.customVendorFeedback = async (req, res, next) => {
+  try {
+    const { vendor_id, positive_feedback, total_feedback } = req.body;
+    if (!vendor_id || !positive_feedback || !total_feedback) {
+      return res
+        .status(400)
+        .send({ status: false, msg: "Please fill all the field" });
+    }
+    if (feedback) {
+      await Vendor.findByIdAndUpdate(vendor_id, {
+        $inc: {
+          total_feedback: Number(total_feedback),
+          positive_feedback: Number(positive_feedback),
+        },
+      });
+      await Vendor.updateOne({ _id: vendor_id }, [
+        {
+          $set: {
+            average_positive_feedback: {
+              $round: [
+                {
+                  $divide: [
+                    { $multiply: ["$positive_feedback", 100] },
+                    "$total_feedback",
+                  ],
+                },
+                2,
+              ],
+            },
+          },
+        },
+      ]);
+    }
+    res.status(200).send({
+      status: true,
+      msg: "Feedback submitted. ",
+    });
+  } catch (er) {
+    next(er);
+  }
+};
+
+module.exports.customProductFeedback = async (req, res, next) => {
+  try {
+    const { product_id, total_rating, rating } = req.body;
+    if (!product_id || !total_rating || !rating) {
+      return res
+        .status(400)
+        .send({ status: false, msg: "Please fill all the field" });
+    }
+    await Product.updateOne(
+      { _id: product_id },
+      {
+        $inc: { rateCount: total_rating, rateValue: total_rating * rating },
+      }
+    );
+    await Product.updateOne({ _id: product_id }, [
+      {
+        $set: {
+          rating: { $round: [{ $divide: ["$rateValue", "$rateCount"] }, 1] },
+        },
+      },
+    ]);
+    res.status(200).send({
+      status: true,
+      msg: "Reviews submitted. ",
+    });
   } catch (er) {
     next(er);
   }

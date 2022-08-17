@@ -46,14 +46,18 @@ const vendorSchema = new Schema({
 		enum: ["Pending", "Approved", "Rejected"]
 	},
 	reject_reason:String,
-	average_rating:{
+	positive_feedback:{
 		type:Number,
 		default:0
 	},
-	total_rating:{
+	total_feedback:{
 		type:Number,
 		default:0
-	}
+	},
+	average_positive_feedback:{
+		type:Number,
+		default:0
+	},
 }, {
 	timestamps: true,
 });
