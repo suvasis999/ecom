@@ -1,17 +1,23 @@
 const mongoose = require('mongoose');
 
 const PaymentsSchema = new mongoose.Schema({
-    orders: [{
-        type: mongoose.Schema.ObjectId,
-        ref: 'Order',
-        required: true
-    }],
-    date: {
-        type: Date,
+    metaData:{
+        type: Object,
+      },
+    amount: {
+        type: String,
         required: true
     },
-    total_price: {
-        type: Number,
+    transferFrom : {
+        type: String,
+        required: true
+    },
+    transferTo : {
+        type: String,
+        required: true
+    },
+    transactionId: {
+        type: String,
         required: true
     },
     
@@ -24,19 +30,7 @@ const PaymentsSchema = new mongoose.Schema({
         type: mongoose.Schema.ObjectId,
         ref: 'User',
         required: true
-    },
-    vendors: [{
-        vendor: {
-            type: mongoose.Schema.ObjectId,
-            ref: 'Vendor',
-            required: true
-        },
-        amount: Number,
-        order: {
-            type: mongoose.Schema.ObjectId,
-            ref: 'Order'
-        }
-    }]
+    }
 }, {
     timestamps: true,
 });
